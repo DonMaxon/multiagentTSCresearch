@@ -67,6 +67,7 @@ class Generator:
                                                                "EfficientMPLight", "Attend",
                                                                "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"]:
                     one_state = state
+                    print("test")
                     action = self.agents[i].choose_action(step_num, one_state)
                     action_list = action
                 else:
@@ -194,7 +195,8 @@ class Generator_LLMLight:
 
                 prompt = prompt[0]['content'] + "\n\n### Instruction:\n" + prompt[1]['content'] + "\n\n### Response:\n"
                 prompts.append(prompt)
-            inputs = tokenizer(prompts, truncation=True, max_length=2048, padding=True, return_tensors='pt').to('cuda')
+            # inputs = tokenizer(prompts, truncation=True, max_length=2048, padding=True, return_tensors='pt').to('cuda')
+            inputs = tokenizer(prompts, truncation=True, max_length=2048, padding=True, return_tensors='pt')
 
             response_ids = llm_model.generate(input_ids=inputs["input_ids"], **generation_kwargs)
             responses = tokenizer.batch_decode(response_ids, skip_special_tokens=True)
