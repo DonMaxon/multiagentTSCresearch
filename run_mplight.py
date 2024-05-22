@@ -61,7 +61,7 @@ def main(in_args=None):
     dic_traffic_env_conf_extra = {
         "NUM_ROUNDS": num_rounds,
         "NUM_GENERATORS": in_args.gen,
-        "NUM_AGENTS": 1,
+        "NUM_AGENTS": 5,
         "NUM_INTERSECTIONS": num_intersections,
         "RUN_COUNTS": count,
 

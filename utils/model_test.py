@@ -7,6 +7,14 @@ import os
 import numpy as np
 from tqdm import tqdm
 
+
+def vote_for_action(actions):
+    res = []
+    for i in range(len(actions[0])):
+        elems = [actions[j][i] for j in range(len(actions))]
+        res.append(max(set(elems), key=elems.count))
+    return np.array(res)
+
 def test(model_dir, data_dir, cnt_round, run_cnt, _dic_traffic_env_conf, logger):
     dic_traffic_env_conf = deepcopy(_dic_traffic_env_conf)
     records_dir = model_dir.replace("model", "records")
@@ -63,14 +71,30 @@ def test(model_dir, data_dir, cnt_round, run_cnt, _dic_traffic_env_conf, logger)
             action_list = []
 
             for i in range(dic_traffic_env_conf["NUM_AGENTS"]):
-                if dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
-                                                          "AdvancedMPLight", "AdvancedColight", "AdvancedDQN", "Attend"]:
+                # if dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
+                #                                           "AdvancedMPLight", "AdvancedColight", "AdvancedDQN", "Attend"]:
+                #     one_state = state
+                #     action_list = agents[i].choose_action(step_num, one_state)
+                # else:
+                #     one_state = state[i]
+                #     action = agents[i].choose_action(step_num, one_state)
+                #     action_list.append(action)
+                if dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight", "Attend",
+                                                               "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"]:
                     one_state = state
-                    action_list = agents[i].choose_action(step_num, one_state)
+                    action = agents[i].choose_action(step_num, one_state)
+                    action_list = action
+                elif dic_traffic_env_conf["MODEL_NAME"] in ["EfficientMPLight"]:
+                    one_state = state
+                    action = agents[i].choose_action(step_num, one_state)
+                    action_list.append(action)
                 else:
                     one_state = state[i]
                     action = agents[i].choose_action(step_num, one_state)
                     action_list.append(action)
+            if dic_traffic_env_conf["MODEL_NAME"] in ["EfficientMPLight"]:
+                action = vote_for_action(action_list)
+                action_list = action
 
             # log statistic state & action
             for i in range(dic_traffic_env_conf['NUM_INTERSECTIONS']):

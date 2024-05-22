@@ -1,3 +1,5 @@
+import numpy
+
 from .config import DIC_AGENTS
 from .cityflow_env import CityFlowEnv
 import time
@@ -44,6 +46,13 @@ class Generator:
             dic_path=dic_path
         )
 
+    def vote_for_action(self, actions):
+        res = []
+        for i in range(len(actions[0])):
+            elems = [actions[j][i] for j in range(len(actions))]
+            res.append(max(set(elems), key = elems.count))
+        return np.array(res)
+
     def generate(self, logger):
 
         reset_env_start_time = time.time()
@@ -62,19 +71,30 @@ class Generator:
             action_list = []
             step_start_time = time.time()
             for i in range(self.dic_traffic_env_conf["NUM_AGENTS"]):
-
-                if self.dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight",
-                                                               "EfficientMPLight", "Attend",
-                                                               "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"]:
+                # if self.dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
+                #                                           "AdvancedMPLight", "AdvancedColight", "AdvancedDQN", "Attend"]:
+                #     one_state = state
+                #     action_list = self.agents[i].choose_action(step_num, one_state)
+                # else:
+                #     one_state = state[i]
+                #     action = self.agents[i].choose_action(step_num, one_state)
+                #     action_list.append(action)
+                if self.dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight", "Attend",
+                                                               "AdvancedMPLight", "AdvancedColight", "AdvancedDQN" ]:
                     one_state = state
-                    print("test")
                     action = self.agents[i].choose_action(step_num, one_state)
                     action_list = action
+                elif self.dic_traffic_env_conf["MODEL_NAME"] in ["EfficientMPLight"]:
+                    one_state = state
+                    action = self.agents[i].choose_action(step_num, one_state)
+                    action_list.append(action)
                 else:
                     one_state = state[i]
                     action = self.agents[i].choose_action(step_num, one_state)
                     action_list.append(action)
-
+            if self.dic_traffic_env_conf["MODEL_NAME"] in ["EfficientMPLight"]:
+                action = self.vote_for_action(action_list)
+                action_list = action
             next_state, reward, done, _ = self.env.step(action_list)
 
             print("time: {0}, running_time: {1}".format(self.env.get_current_time() -

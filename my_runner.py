@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument("--memo", type=str, default='MPLight')
     parser.add_argument("--mod", type=str, default="EfficientMPLight")
     parser.add_argument("--model", type=str, default="MPLight")
-    parser.add_argument("--proj_name", type=str, default="mplightgpt_test_1")
+    parser.add_argument("--proj_name", type=str, default="mplight_test_4")
     parser.add_argument("--eightphase", action="store_true", default=False)
     parser.add_argument("--duration", type=int, default=30)
     parser.add_argument("--gen", type=int, default=1)
