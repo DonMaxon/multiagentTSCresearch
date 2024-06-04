@@ -160,6 +160,13 @@ class Generator_LLMLight:
             dic_path=dic_path
         )
 
+    def vote_for_action(self, actions):
+        res = []
+        for i in range(len(actions[0])):
+            elems = [actions[j][i] for j in range(len(actions))]
+            res.append(max(set(elems), key = elems.count))
+        return np.array(res)
+
     def generate(self, logger, tokenizer, llm_model, generation_kwargs):
 
         reset_env_start_time = time.time()
@@ -176,45 +183,48 @@ class Generator_LLMLight:
             if done:
                 break
 
+            actions = []
             current_states = []
             action_list = []
+            NUM_AGENTS = 5
+            for _ in range(NUM_AGENTS):
+                for i in range(len(state)):
+                    # log statistic state
+                    intersection = self.env.intersection_dict[self.env.list_intersection[i].inter_name]
+                    roads = deepcopy(intersection["roads"])
+                    statistic_state, statistic_state_incoming, mean_speed = get_state_detail(roads, self.env)
+                    current_states.append(statistic_state)
 
-            for i in range(len(state)):
-                # log statistic state
-                intersection = self.env.intersection_dict[self.env.list_intersection[i].inter_name]
-                roads = deepcopy(intersection["roads"])
-                statistic_state, statistic_state_incoming, mean_speed = get_state_detail(roads, self.env)
-                current_states.append(statistic_state)
+                prompts = []
+                alpaca_prompts = []
+                for s in current_states:
+                    prompt = getPrompt(state2text(s))
+                    alpaca_prompts.append({"instruction": prompt[1]['content'], "input": "", "output": ""})
 
-            prompts = []
-            alpaca_prompts = []
-            for s in current_states:
-                prompt = getPrompt(state2text(s))
-                alpaca_prompts.append({"instruction": prompt[1]['content'], "input": "", "output": ""})
+                    prompt = prompt[0]['content'] + "\n\n### Instruction:\n" + prompt[1]['content'] + "\n\n### Response:\n"
+                    prompts.append(prompt)
+                inputs = tokenizer(prompts, truncation=True, max_length=2048, padding=True, return_tensors='pt').to('cuda')
 
-                prompt = prompt[0]['content'] + "\n\n### Instruction:\n" + prompt[1]['content'] + "\n\n### Response:\n"
-                prompts.append(prompt)
-            inputs = tokenizer(prompts, truncation=True, max_length=2048, padding=True, return_tensors='pt').to('cuda')
+                response_ids = llm_model.generate(input_ids=inputs["input_ids"], **generation_kwargs)
+                responses = tokenizer.batch_decode(response_ids, skip_special_tokens=True)
 
-            response_ids = llm_model.generate(input_ids=inputs["input_ids"], **generation_kwargs)
-            responses = tokenizer.batch_decode(response_ids, skip_special_tokens=True)
-
-            fail_num = 0
-            fail_flags = [False for _ in responses]
-            vehicle_nums = self.get_vehicle_num(current_states)
-            for i, res in enumerate(responses):
-                res = res[len(prompts[i]):]
-                signal_answer_pattern = r'<signal>(.*?)</signal>'
-                signals = re.findall(signal_answer_pattern, res)
-                signal_text = signals[-1] if len(signals) > 0 else "ETWT"
-                action_list.append(action2code(signal_text) if signal_text in four_phase_list else 0)
-                if len(signals) == 0 or signal_text not in four_phase_list:
-                    if vehicle_nums[i] != 0:
-                        fail_num += 1
-                        fail_flags[i] = True
-
-            # action_list = []
+                fail_num = 0
+                fail_flags = [False for _ in responses]
+                vehicle_nums = self.get_vehicle_num(current_states)
+                for i, res in enumerate(responses):
+                    res = res[len(prompts[i]):]
+                    signal_answer_pattern = r'<signal>(.*?)</signal>'
+                    signals = re.findall(signal_answer_pattern, res)
+                    signal_text = signals[-1] if len(signals) > 0 else "ETWT"
+                    action_list.append(action2code(signal_text) if signal_text in four_phase_list else 0)
+                    if len(signals) == 0 or signal_text not in four_phase_list:
+                        if vehicle_nums[i] != 0:
+                            fail_num += 1
+                            fail_flags[i] = True
+                actions.append(action_list)
+                # action_list = []
             step_start_time = time.time()
+            action_list = self.vote_for_action(actions)
             # for i in range(self.dic_traffic_env_conf["NUM_AGENTS"]):
             #
             #     if self.dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight",
