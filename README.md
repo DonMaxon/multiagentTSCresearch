@@ -19,17 +19,13 @@
 <a id="introduction"></a>
 ## 1 Introduction
 
-Official code for article "[LLMLight: Large Language Models as Traffic Signal Control Agents](https://arxiv.org/abs/2312.16044)".
+Official code for article "[From Single Agent to Multi-Agent: Improving Traffic Signal Control]([https://arxiv.org/abs/2312.16044](https://arxiv.org/abs/2406.13693))".
 
-Traffic Signal Control (TSC) is a crucial component in urban traffic management, aiming to optimize road network efficiency and reduce congestion. Traditional methods in TSC, primarily based on transportation engineering and reinforcement learning (RL), often exhibit limitations in generalization across varied traffic scenarios and lack interpretability. This paper presents LLMLight, a novel framework employing Large Language Models (LLMs) as decision-making agents for TSC. Specifically, the framework begins by instructing the LLM with a knowledgeable prompt detailing real-time traffic conditions. Leveraging the advanced generalization capabilities of LLMs, LLMLight engages a reasoning and decision-making process akin to human intuition for effective traffic control. Moreover, we build LightGPT, a specialized backbone LLM tailored for TSC tasks. By learning nuanced traffic patterns and control strategies, LightGPT enhances the LLMLight framework cost-effectively. Extensive experiments on nine real-world and synthetic datasets showcase the remarkable effectiveness, generalization ability, and interpretability of LLMLight against nine transportation-based and RL-based baselines.
-
-The code structure is based on [Efficient_XLight](https://github.com/LiangZhang1996/Efficient_XLight.git).
-
-![workflow](./media/Workflow.png)
-
-### Watch Our Demo Video Here:
-https://github.com/usail-hkust/LLMTSCS/assets/62106026/90567f61-5d58-4dac-8c8e-836a421f3ff9
-
+Due to accelerating urbanization, the importance of solving the signal control problem increases.
+This paper analyzes various existing methods and suggests options for increasing the number of agents
+to reduce the average travel time. Experiments were carried out with 2 datasets. The results show that
+in some cases, the implementation of multiple agents can improve existing methods. For a fine-tuned
+large language model approach there’s small enhancement on all metrics.
 
 <a id="requirements"></a>
 ## 2 Requirements
