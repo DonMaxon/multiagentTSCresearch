@@ -1,14 +1,4 @@
-# LLMLight: Large Language Models as Traffic Signal Control Agents
-
-[![llmlight](./media/llmlight.png)](https://gungnir2099.github.io/LLMLight-Page/)
-
-<p align="center">
-
-![Testing Status](https://img.shields.io/badge/docs-in_progress-green)
-![Testing Status](https://img.shields.io/badge/pypi_package-in_progress-green)
-![Testing Status](https://img.shields.io/badge/license-MIT-blue)
-![Stars](https://img.shields.io/github/stars/usail-hkust/LLMTSCS)
-![Visits Badge](https://badges.pufler.dev/visits/usail-hkust/LLMTSCS)
+# From Single Agent to Multi-Agent: Improving Traffic Signal Control
 
 </p>
 
@@ -22,7 +12,7 @@
 | **[6 Code structure](#code-structure)** 
 | **[7 Datasets](#datasets)**
 | **[8 Citation](#citation)**
-| **[Website](https://gungnir2099.github.io/LLMLight-Page/)** |
+
 
 </p>
 
