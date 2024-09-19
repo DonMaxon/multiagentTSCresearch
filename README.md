@@ -8,10 +8,9 @@
 | **[2 Requirements](#requirements)**
 | **[3 Usage](#usage)**
 | **[4 Baselines](#baselines)**
-| **[5 LightGPT Training](#lightgpt-training)** 
-| **[6 Code structure](#code-structure)** 
-| **[7 Datasets](#datasets)**
-| **[8 Citation](#citation)**
+| **[5 Code structure](#code-structure)** 
+| **[6 Datasets](#datasets)**
+| **[7 Citation](#citation)**
 
 
 </p>
