@@ -90,67 +90,9 @@ python run_open_LLM.py --llm_model LLM_MODEL_NAME_ONLY_FOR_LOG \
 - **LLMLight+LightGPT**:
     - The model trained on Jinan 1 is available at https://huggingface.co/USAIL-HKUSTGZ/LLMLight-LightGPT
 
-<a id="lightgpt-training"></a>
-
-## 5 LightGPT Training
-
-### Step 1: Imitation Fine-tuning
-
-```shell
-python ./finetune/run_imitation_finetune.py --base_model MODEL_PATH \
-                                            --data_path DATA_PATH \
-                                            --output_dir OUTPUT_DIR
-                                            
-python ./finetune/merge_lora.py --adapter_model_name="OUTPUT_DIR" \
-                                --base_model_name="MODEL_PATH" \
-                                --output_name="MERGED_MODEL_PATH"
-```
-
-We merge the adapter with the base model by running `merge_lora.py`.
-
-### Step 2: Policy Refinement Data Collection
-
-- You first need to train `Advanced-CoLight` by running:
-
-```shell
-python run_advanced_colight.py --dataset hangzhou \
-                               --traffic_file anon_4_4_hangzhou_real.json \
-                               --proj_name TSCS
-```
-
-The RL model weights will be automatically saved in a checkpoint folder in `./model`. You need to copy it and put it under the `./model_weights/AdvancedColight/{traffic_file}/"` folder.
-
-- Then, collect the data by running:
-
-```shell
-python ./finetune/run_policy_refinement_data_collection.py --llm_model MODEL_NAME_ONLY_FOR_LOG \
-                                                           --llm_path MODEL_PATH \
-                                                           --dataset hangzhou \
-                                                           --traffic_file anon_4_4_hangzhou_real.json
-```
-
-The fine-tuning data will be ready at `./data/cgpr/cgpr_{traffic_file}.json`.
-
-### Step 3: Critic-guided Policy Refinement
-
-```shell
-python ./finetune/run_policy_refinement.py --llm_model MODEL_NAME_ONLY_FOR_LOG \
-                                           --llm_path MODEL_PATH \
-                                           --llm_output_dir OUTPUT_DIR \
-                                           --dataset hangzhou \
-                                           --traffic_file anon_4_4_hangzhou_real.json \
-                                           --proj_name LightGPTFineTuning
-                                           
-python ./finetune/merge_lora.py --adapter_model_name="OUTPUT_DIR_{traffic_file}" \
-                                --base_model_name="MODEL_PATH" \
-                                --output_name="MERGED_MODEL_PATH"
-```
-
-Similarly, we merge the adapter with the base model by running `merge_lora.py`.
-
 <a id="code-structure"></a>
 
-## 6 Code structure
+## 5 Code structure
 
 - `models`: contains all the models used in our article.
 - `utils`: contains all the methods to simulate and train the models.
@@ -161,7 +103,7 @@ Similarly, we merge the adapter with the base model by running `merge_lora.py`.
 - `finetune`: contains codes for LightGPT training.
 
 <a id="datasets"></a>
-## 7 Datasets
+## 6 Datasets
 
 <table>
     <tr>
@@ -198,15 +140,16 @@ Similarly, we merge the adapter with the base model by running `merge_lora.py`.
 
 <a id="citation"></a>
 
-## 8 Citation
+## 7 Citation
 
 ```
-@misc{lai2024llmlight,
-      title={LLMLight: Large Language Models as Traffic Signal Control Agents}, 
-      author={Siqi Lai and Zhao Xu and Weijia Zhang and Hao Liu and Hui Xiong},
+@misc{tislenko2024singleagentmultiagentimproving,
+      title={From Single Agent to Multi-Agent: Improving Traffic Signal Control}, 
+      author={Maksim Tislenko and Dmitrii Kisilev},
       year={2024},
-      eprint={2312.16044},
+      eprint={2406.13693},
       archivePrefix={arXiv},
-      primaryClass={cs.AI}
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2406.13693}, 
 }
 ```
